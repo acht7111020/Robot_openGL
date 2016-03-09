@@ -145,6 +145,8 @@ void print(void){
     glPopMatrix();
     glPopMatrix();
     
+    // LIEF HAND
+    
     /*glColor3ubv(robox_connect);
     glutSolidSphere(0.1, 30, 30);
     
