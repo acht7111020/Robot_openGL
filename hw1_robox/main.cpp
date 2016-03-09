@@ -10,8 +10,7 @@
 const GLubyte robox_body[] = {74, 194, 164};
 const GLubyte robox_connect[] = {255, 153, 51};
 const GLubyte robox_eyes[] = {0, 0, 0};
-const GLfloat tri_v2[3] = { 0.5f, -0.4f, 0.0f};
-const GLfloat tri_v3[3] = { 0.0f,  0.6f, 0.0f};
+const GLubyte robox_leg[] = {26, 181, 170};
 
 const GLfloat light_ambient[]  = { 0.0f, 0.0f, 0.0f, 1.0f };
 const GLfloat light_diffuse[]  = { 1.0f, 1.0f, 1.0f, 1.0f };
@@ -29,6 +28,7 @@ GLuint flag = 0;
 bool timer_enabled = true;
 unsigned int timer_speed = 16;
 
+GLUquadricObj *quadricObj = gluNewQuadric();
 // Print OpenGL context related information.
 void dumpInfo(void)
 {
@@ -68,9 +68,9 @@ void draw_finger(GLfloat angle1, GLfloat angle2, GLfloat y, GLfloat z){
 // Print My display
 void print(void){
     
-    glRotatef(auto_rotate,0.0f, 1.0f, 0.0f);
-    glPushMatrix();
     
+    glPushMatrix();
+    glRotatef(auto_rotate,0.0f, 1.0f, 0.0f);
     // BODY PART
     glPushMatrix();
     glColor3ubv(robox_body);
@@ -180,6 +180,45 @@ void print(void){
     draw_finger(180, 30, -0.05, 0.035);
     draw_finger(160, 30, -0.05, -0.035);
     glPopMatrix();
+    glPopMatrix();
+    
+    // RIGHT LEG
+    glPushMatrix();
+    glColor3ubv(robox_leg);
+    glTranslatef(0, -0.3f, 0.0f);
+    
+    glPushMatrix();
+    glTranslatef(0.11, 0, 0);
+    glRotatef(90, 1, 0.2, 0);
+    gluCylinder(quadricObj, 0.08, 0.06, 0.5, 30, 30);
+    
+    glPopMatrix();
+    
+    glPushMatrix();
+    glColor3ubv(robox_connect);
+    glTranslatef(0.21, -0.50, 0);
+    glRotatef(90, 0, 0, 1);
+    glScalef(0.2f, 1.0f, 1.0f);
+    glutSolidCube(0.2);
+    glPopMatrix();
+    
+    
+    // LEFT LEG
+    glPushMatrix();
+    glColor3ubv(robox_leg);
+    glTranslatef(-0.11, 0, 0);
+    glRotatef(90, 1, -0.2, 0);
+    gluCylinder(quadricObj, 0.08, 0.06, 0.5, 30, 30);
+    glPopMatrix();
+    
+    glPushMatrix();
+    glColor3ubv(robox_connect);
+    glTranslatef(-0.21, -0.50, 0);
+    glRotatef(90, 0, 0, 1);
+    glScalef(0.2f, 1.0f, 1.0f);
+    glutSolidCube(0.2);
+    glPopMatrix();
+    
     glPopMatrix();
     
     /*glColor3ubv(robox_connect);
