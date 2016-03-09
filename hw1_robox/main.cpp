@@ -146,6 +146,41 @@ void print(void){
     glPopMatrix();
     
     // LIEF HAND
+    glPushMatrix();
+    glColor3ubv(robox_connect);
+    glTranslatef(-0.33f, 0.27f, 0.0f);
+    glutSolidSphere(0.085, 30, 30);
+    
+    glRotatef(240, 0, 0, 1);
+    glColor3ubv(robox_body);
+    glTranslatef(0.2f, 0.0f, 0.0f);
+    glScalef(2.4f, 1.0f, 1.0f);
+    glutSolidCube(0.11);
+    
+    glScalef(1/2.4f, 1.0f, 1.0f);
+    glColor3ubv(robox_connect);
+    glTranslatef(0.19f, 0.0f, 0.0f);
+    glutSolidSphere(0.085, 30, 30);
+    
+    glRotatef(20, 0, 0, 1);
+    glColor3ubv(robox_body);
+    glTranslatef(0.2f, 0.0f, 0.0f);
+    glScalef(2.4f, 1.0f, 1.0f);
+    glutSolidCube(0.11);
+    
+    glScalef(1/2.4f, 1.0f, 1.0f);
+    glColor3ubv(robox_connect);
+    glTranslatef(0.19f, 0.0f, 0.0f);
+    glutSolidSphere(0.085, 30, 30);
+    
+    glPushMatrix();
+    glTranslatef(0.065, 0.0f, 0.0f);
+    glScalef(0.7f, 1.0f, 1.0f);
+    draw_finger(180, -10, 0.04, 0);
+    draw_finger(180, 30, -0.05, 0.035);
+    draw_finger(160, 30, -0.05, -0.035);
+    glPopMatrix();
+    glPopMatrix();
     
     /*glColor3ubv(robox_connect);
     glutSolidSphere(0.1, 30, 30);
