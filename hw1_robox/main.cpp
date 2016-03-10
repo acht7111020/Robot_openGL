@@ -184,87 +184,73 @@ void print(void){
     
     // RIGHT LEG
     glPushMatrix();
-    glColor3ubv(robox_leg);
-    glTranslatef(0, -0.3f, 0.0f);
+        glColor3ubv(robox_connect);
+        glTranslatef(0, -0.4f, 0.0f);
     
-    glPushMatrix();
-    glTranslatef(0.11, 0, 0);
-    glRotatef(90, 1, 0.2, 0);
-    gluCylinder(quadricObj, 0.08, 0.06, 0.5, 30, 30);
+        glPushMatrix();
+            glTranslatef(0.15, 0, 0);
+            glutSolidSphere(0.085, 30, 30);
+            // LEG 1
+            glColor3ubv(robox_leg);
+            glRotatef(-20, 1, 0, 0);
+            glTranslatef(0, -0.18, 0);
+            glScalef(1.0, 1.8, 1.0);
+            glutSolidCube(0.13);
+            // LEG 2
+            glScalef(1, 0.5, 1);
+            glTranslatef(0, -0.11, 0);
+            glRotatef(40, 1, 0, 0);
+            glTranslatef(0, -0.15, 0);
+            glScalef(1.0, 3.0, 1.0);
+            glutSolidCube(0.11);
+            
+            glPushMatrix();
+                glColor3ubv(robox_connect);
+                glTranslatef(0, -0.055, 0);
+            
+                glRotatef(90, 0, 0, 1);
+                glScalef(0.16f, 1.3f, 1.0f);
+                glutSolidCube(0.2);
+            glPopMatrix();
+        
+        glPopMatrix();
+    
+   
+        // LEFT LEG
+        glPushMatrix();
+            glTranslatef(-0.15, 0, 0);
+            glutSolidSphere(0.085, 30, 30);
+    
+            // LEG 1
+            glColor3ubv(robox_leg);
+            glRotatef(-20, 1, 0, 0);
+            glTranslatef(0, -0.18, 0);
+            glScalef(1.0, 1.8, 1.0);
+            glutSolidCube(0.13);
+            // LEG 2
+            glScalef(1, 0.5, 1);
+            glTranslatef(0, -0.11, 0);
+            glRotatef(40, 1, 0, 0);
+            glTranslatef(0, -0.15, 0);
+            glScalef(1.0, 3.0, 1.0);
+            glutSolidCube(0.11);
+            
+            glPushMatrix();
+                glColor3ubv(robox_connect);
+                glTranslatef(0, -0.055, 0);
+                
+                glRotatef(90, 0, 0, 1);
+                glScalef(0.16f, 1.3f, 1.0f);
+                glutSolidCube(0.2);
+            glPopMatrix();
+        
+        glPopMatrix();
+    
+    
     
     glPopMatrix();
     
-    glPushMatrix();
-    glColor3ubv(robox_connect);
-    glTranslatef(0.21, -0.50, 0);
-    glRotatef(90, 0, 0, 1);
-    glScalef(0.2f, 1.0f, 1.0f);
-    glutSolidCube(0.2);
-    glPopMatrix();
     
-    
-    // LEFT LEG
-    glPushMatrix();
-    glColor3ubv(robox_leg);
-    glTranslatef(-0.11, 0, 0);
-    glRotatef(90, 1, -0.2, 0);
-    gluCylinder(quadricObj, 0.08, 0.06, 0.5, 30, 30);
-    glPopMatrix();
-    
-    glPushMatrix();
-    glColor3ubv(robox_connect);
-    glTranslatef(-0.21, -0.50, 0);
-    glRotatef(90, 0, 0, 1);
-    glScalef(0.2f, 1.0f, 1.0f);
-    glutSolidCube(0.2);
-    glPopMatrix();
-    
-    glPopMatrix();
-    
-    /*glColor3ubv(robox_connect);
-    glutSolidSphere(0.1, 30, 30);
-    
-    glColor3ubv(robox_body);
-     
-    glTranslatef(0.25f, 0.0f, 0.0f);
-    glScalef(2.5f, 1.0f, 1.0f);
-    //glutSolidSphere(0.1, 30, 30);
-    glutSolidCube(0.13);
-    glPopMatrix();
-    
-    glPushMatrix();
-    if (timer_cnt == 90 || flag == 1) {
-        timer_flag--;
-        flag = 1;
-        if (timer_flag <= 0) {
-            timer_flag = 90;
-            timer_cnt = 0;
-            flag = 0;
-            glRotatef(timer_cnt, 0.0f, 0.0f, -1.0f);
-        }
-        else glRotatef(timer_flag, 0.0f, 0.0f, -1.0f);
-    }
-    else glRotatef(timer_cnt, 0.0f, 0.0f, -1.0f);
-    
-    //arm
-    glColor3ubv(robox_body);
-    glTranslatef(-0.25f, 0.0f, 0.0f);
-    glScalef(2.5f, 1.0f, 1.0f);
-    //glutSolidSphere(0.1, 30, 30);
-    glutSolidCube(0.13);
-    
-    //sphere
-    glColor3ubv(robox_connect);
-    glScalef(1/2.5f, 1.0f, 1.0f);
-    glTranslatef(-0.25f, 0.0f, 0.0f);
-    glutSolidSphere(0.11, 50, 50);
-    
-    
-    //finger
-    draw_finger(-20, 50, 0.06, 0.055);
-    draw_finger(-20, 60, 0.06, -0.055);
-    draw_finger(20, -60, -0.07, 0.0);
-    */
     glPopMatrix();
 }
 
@@ -302,7 +288,7 @@ void My_Reshape(int width, int height)
     float viewportAspect = (float)width / (float)height;
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    gluOrtho2D(-1 * viewportAspect, 1 * viewportAspect, -1, 1);
+    gluOrtho2D(-1.4 * viewportAspect, 1.4 * viewportAspect, -1.4, 1.4);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     gluLookAt(0.0, 1.0, 5.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
