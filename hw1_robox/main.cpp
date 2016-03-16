@@ -3,6 +3,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <iostream>
+#include "texture_loader.h"
 
 #define MENU_TIMER_START 1
 #define MENU_TIMER_STOP 2
@@ -34,6 +35,9 @@ const GLfloat mat_diffuse[]    = { 0.8f, 0.8f, 0.8f, 1.0f };
 const GLfloat mat_specular[]   = { 1.0f, 1.0f, 1.0f, 1.0f };
 const GLfloat high_shininess[] = { 100.0f };
 
+
+GLuint textureID, tele;
+
 GLubyte timer_cnt = 0;
 GLuint timer_flag = 90, auto_rotate = 1, flag = 0;
 GLint x_place_tmp = 0, x_place = 0;
@@ -51,9 +55,10 @@ struct animate_paras
     GLfloat move = 0;
     GLint flag = 0;
 } head, hand1, hand2, hand1_l, hand2_l, leg1, leg2, leg1_l, leg2_l,
-H_hand1, H_hand2, H_hand1_l, H_hand2_l,
+H_hand1, H_hand2, H_hand1_l, H_hand2_l, leg_y1, leg_y2, leg_ly1, leg_ly2,
 fingerH1, fingerH2, fingerH3, fingerB1, fingerB2, fingerB3,
-fingerLH1, fingerLH2, fingerLH3, fingerLB1, fingerLB2, fingerLB3;
+fingerLH1, fingerLH2, fingerLH3, fingerLB1, fingerLB2, fingerLB3,
+position_hx, position_hy;
 struct papameters {
     GLfloat head_biggest;
     GLfloat head_smallest;
@@ -75,14 +80,7 @@ struct papameters_ani {
 } paras_ani[3];
 
 GLuint paras_num = 0;
-// Print OpenGL context related information.
-void dumpInfo(void)
-{
-    printf("Vendor: %s\n", glGetString (GL_VENDOR));
-    printf("Renderer: %s\n", glGetString (GL_RENDERER));
-    printf("Version: %s\n", glGetString (GL_VERSION));
-    printf("GLSL: %s\n", glGetString (GL_SHADING_LANGUAGE_VERSION));
-}
+
 animate_paras trans_animate_paras(animate_paras parts, GLfloat biggest, GLfloat smallest, GLfloat rate){
     
     if(parts.move < smallest || parts.flag == 1){
@@ -96,29 +94,15 @@ animate_paras trans_animate_paras(animate_paras parts, GLfloat biggest, GLfloat 
 }
 void trans_animate(void){
     if (paras_num != 1) {
-        if (MENU_rotate && !MENU_pause)auto_rotate ++;
+        //if (MENU_rotate && !MENU_pause)auto_rotate ++;
     }
     if (!MENU_stop && !MENU_pause) {
         head = trans_animate_paras(head, paras[paras_num].head_biggest, paras[paras_num].head_smallest, 0.001*MENU_speed);
-        /*hand1 = trans_animate_paras(hand1, 10, -10, 0.3*MENU_speed);
-        hand2 = trans_animate_paras(hand2, 30, -10, 0.6*MENU_speed);
-        hand1_l = trans_animate_paras(hand1_l, 10, -10, 0.3*MENU_speed);
-        hand2_l = trans_animate_paras(hand2_l, 10, -30, 0.6*MENU_speed);
-        
-        leg1 = trans_animate_paras(leg1, 0, -40, 0.6*MENU_speed);
-        leg2 = trans_animate_paras(leg2, 40, 0, 0.6*MENU_speed);
-        leg1_l = trans_animate_paras(leg1_l, 0, -40, 0.6*MENU_speed);
-        leg2_l = trans_animate_paras(leg2_l, 40, 0, 0.6*MENU_speed);*/
         
         hand1 = trans_animate_paras(hand1, paras[paras_num].hand1_biggest[0], paras[paras_num].hand1_smallest[0], 0.3*MENU_speed);
         hand2 = trans_animate_paras(hand2, paras[paras_num].hand2_biggest[0], paras[paras_num].hand2_smallest[0], 0.6*MENU_speed);
         hand1_l = trans_animate_paras(hand1_l, paras[paras_num].hand1_biggest[1], paras[paras_num].hand1_smallest[1], 0.3*MENU_speed);
         hand2_l = trans_animate_paras(hand2_l, paras[paras_num].hand2_biggest[1], paras[paras_num].hand2_smallest[1], 0.6*MENU_speed);
-        
-        leg1 = trans_animate_paras(leg1, paras[paras_num].leg1_biggest[0], paras[paras_num].leg1_smallest[0], 0.6*MENU_speed);
-        leg2 = trans_animate_paras(leg2, paras[paras_num].leg2_biggest[0], paras[paras_num].leg2_smallest[0], 0.6*MENU_speed);
-        leg1_l = trans_animate_paras(leg1_l, paras[paras_num].leg1_biggest[1], paras[paras_num].leg1_smallest[1], 0.6*MENU_speed);
-        leg2_l = trans_animate_paras(leg2_l, paras[paras_num].leg2_biggest[1], paras[paras_num].leg2_smallest[1], 0.6*MENU_speed);
         
         fingerH1 = trans_animate_paras(fingerH1, 200, 180, 0.1*MENU_speed);
         fingerH2 = trans_animate_paras(fingerH2, 200, 180, 0.1*MENU_speed);
@@ -135,14 +119,31 @@ void trans_animate(void){
 
         
         if (paras_num == 1) {
-            position_x -= 0.0001 ; position_y -= 0.0001 ;
+            //position_x -= 0.0001 ; position_y -= 0.0001 ;
+            position_hx = trans_animate_paras(position_hx, 0.8, -0.8, 0.0012*MENU_speed);
+            position_hy = trans_animate_paras(position_hy, 0.1, -0.1, 0.0036*MENU_speed);
             H_hand1 = trans_animate_paras(H_hand1, paras_ani[paras_num].hand1_biggest[0], paras_ani[paras_num].hand1_smallest[0], 0.5*MENU_speed);
             H_hand2 = trans_animate_paras(H_hand2, paras_ani[paras_num].hand2_biggest[0], paras_ani[paras_num].hand2_smallest[0], 0.8*MENU_speed);
             H_hand1_l =
             trans_animate_paras(H_hand1_l, paras_ani[paras_num].hand1_biggest[1], paras_ani[paras_num].hand1_smallest[1], 0.5*MENU_speed);
             H_hand2_l =
             trans_animate_paras(H_hand2_l, paras_ani[paras_num].hand2_biggest[1], paras_ani[paras_num].hand2_smallest[1], 0.8*MENU_speed);
+            
+            leg_y1 = trans_animate_paras(leg_y1, 80, -10, 0.57*MENU_speed);
+            leg2 = trans_animate_paras(leg2, 40, 20, 0.38*MENU_speed);
+            leg_ly1 = trans_animate_paras(leg_ly1, 10, -80, 0.57*MENU_speed);
+            leg2_l = trans_animate_paras(leg2_l, 40, 20, 0.38*MENU_speed);
+            
         }
+        else {
+            
+            leg1 = trans_animate_paras(leg1, paras[paras_num].leg1_biggest[0], paras[paras_num].leg1_smallest[0], 0.6*MENU_speed);
+            leg2 = trans_animate_paras(leg2, paras[paras_num].leg2_biggest[0], paras[paras_num].leg2_smallest[0], 0.6*MENU_speed);
+            leg1_l = trans_animate_paras(leg1_l, paras[paras_num].leg1_biggest[1], paras[paras_num].leg1_smallest[1], 0.6*MENU_speed);
+            leg2_l = trans_animate_paras(leg2_l, paras[paras_num].leg2_biggest[1], paras[paras_num].leg2_smallest[1], 0.6*MENU_speed);
+        }
+        
+        
     }
     //printf("%lf\n", head.move);
 
@@ -162,7 +163,7 @@ void init_para(){
     
     fingerH1.move = 200;
     fingerB1.move = 0;
-    fingerH2.move = 160;
+    fingerH2.move = 200;
     fingerB2.move = 0;
     fingerH3.move = 160;
     fingerB3.move = 0;
@@ -179,12 +180,19 @@ void init_para(){
         H_hand2.move = 80;
         H_hand1_l.move = 240;
         H_hand2_l.move = -80;
+        leg_y1.move = 35; leg_y1.flag = 0;
+        leg_ly1.move = -35; leg_ly1.flag = 1;
+        leg2.move = 30; leg2.flag = 0;
+        leg2_l.move = 30; leg2_l.flag = 0;
     }
     else {
         H_hand1.move = 60;
         H_hand2.move = 20;
         H_hand1_l.move = 240;
         H_hand2_l.move = 20;
+        leg_y1.move = 0; leg_y1.flag = 0;
+        leg_ly1.move = 0; leg_ly1.flag = 0;
+        position_hy.move = 0;position_hx.move = 0;
     }
     
     paras[0] = {0, -0.15, {10,10}, {-10,-10}, {30, 10}, {-10,-30}, {0,0}, {-40,-40}, {40,40}, {0,0}};
@@ -192,6 +200,16 @@ void init_para(){
     paras_ani[0] ={{60,240}, {60,240}, {20, 20}, {20, 20}};
     paras_ani[1] ={{420,230}, {320,130}, {80, 80}, {-80, -80}};
     //paras[0] = {0, -0.15, {10,10}, {-10,-10}, {30, 10}, {-10,-30}, {0,0}, {-40,-40}, {40,40}, {0,0}};
+
+}
+
+void head_ear(GLfloat x){
+    glPushMatrix();
+        glColor3ub(255, 255, 255);
+        glTranslatef(x, 0.0f, 0.0f);
+        glScaled(0.02f, 0.05f, 0.05f);
+        glutSolidIcosahedron();
+    glPopMatrix();
 
 }
 void draw_finger(GLfloat angle1, GLfloat angle2, GLfloat y, GLfloat z){
@@ -217,40 +235,167 @@ void draw_finger(GLfloat angle1, GLfloat angle2, GLfloat y, GLfloat z){
     //glutSolidSphere(0.02, 50, 50);
     glutSolidCube(0.04);
     
-    /*glScalef(1/2.0f, 1.0f, 1.0f);
-    glTranslatef(-0.05f, 0.0f, 0.0f);
-    glutSolidSphere(0.02, 50, 50);*/
+    glPopMatrix();
+}
+void hand(GLfloat x, GLint flag, animate_paras Hhand1, animate_paras Bhand1, animate_paras Hhand2, animate_paras Bhand2,
+          GLfloat x2, char finger){
+    
+    // RIGHT HAND
+    glPushMatrix();
+        glColor3ubv(robox_connect);
+    
+        glTranslatef(x, 0.27f, 0.0f);
+        glPushMatrix();
+            glRotated(90, 0, 1, 0);
+            glutSolidTorus(0.05, 0.035, 30, 30);
+    
+            glTranslatef(0, 0, 0.03*flag);
+            glutSolidTorus(0.05, 0.015, 30, 30);
+        glPopMatrix();
+ 
+    
+        glRotatef(Hhand1.move, 0, 0, -1*flag);
+        
+        glRotatef(Bhand1.move, 0, -1*flag, 0);
+        glColor3ubv(robox_body);
+        glTranslatef(0.19f, 0.0f, 0.0f);
+        glScalef(2.2f, 0.7f, 1.0f);
+        glutSolidCube(0.11);
+        
+        glScalef(1/2.2f, 1/0.7f, 1.0f);
+        glColor3ubv(robox_connect);
+        glTranslatef(0.19f, 0.0f, 0.0f);
+        glutSolidSphere(0.08, 30, 30);
+        
+        glRotatef(Hhand2.move, 0, 0, -1*flag);
+        
+        glRotatef(Bhand2.move, 0, -1*flag, 0);
+        glColor3ubv(robox_body);
+        glTranslatef(0.18f, 0.0f, 0.0f);
+        glScalef(1.6f, 1.0f, 1.0f);
+        glutSolidCube(0.15);
+        
+        glScalef(1/2.0f, 1.0f, 1.0f);
+        glColor3ubv(robox_connect);
+        
+        glTranslatef(x2, 0.0f, 0.0f);
+        glPushMatrix();
+            glScaled(1, 1.2f, 1.2f);
+            glutSolidCube(0.14);
+        glPopMatrix();
+        
+        glPushMatrix();
+            glTranslatef(0.075, 0.0f, 0.0f);
+            glScalef(0.7f, 1.0f, 1.0f);
+            if (finger == 'r') {
+                draw_finger(fingerH1.move, fingerB1.move, 0.04, 0.035);
+                draw_finger(fingerH2.move, fingerB2.move, 0.04, -0.035);
+                draw_finger(fingerH3.move, fingerB3.move, -0.05, 0.0);
+            }
+            else{
+                draw_finger(fingerLH1.move, fingerLB1.move, 0.04, 0);
+                draw_finger(fingerLH2.move, fingerLB2.move, -0.05, 0.035);
+                draw_finger(fingerLH3.move, fingerLB3.move, -0.05, -0.035);
+            }
+        
+        glPopMatrix();
+    glPopMatrix();
+}
+void draw_leg(GLfloat x, animate_paras Hleg1, animate_paras Bleg1, animate_paras Yleg1, GLuint texture){
+    
+    glPushMatrix();
+    
+    
+        glTranslatef(x, 0, 0);
+        glColor3ub(255, 255, 255);
+        
+        glPushMatrix();
+            glEnable(GL_TEXTURE_GEN_S); //enable texture coordinate generation
+            glEnable(GL_TEXTURE_GEN_T);
+            glEnable(GL_TEXTURE_GEN_R);
+            glEnable(GL_TEXTURE_2D);
+            glBindTexture(GL_TEXTURE_2D, texture);
+        
+                glScalef(0.07f, 0.05f, 0.08f);
+                glutSolidDodecahedron();
+            glBindTexture(GL_TEXTURE_2D, 0);
+            glDisable(GL_TEXTURE_2D);
+            glDisable(GL_TEXTURE_GEN_S); //enable texture coordinate generation
+            glDisable(GL_TEXTURE_GEN_T);
+            glDisable(GL_TEXTURE_GEN_R);
+        glPopMatrix() ;
+        
+        // LEG 1
+        glColor3ubv(robox_leg);
+        glRotated(Yleg1.move, 0, 1, 0);
+        glRotatef(Hleg1.move, 1, 0, 0);
+        glTranslatef(0, -0.18, 0);
+        glScalef(1.0, 1.8, 1.0);
+        glutSolidCube(0.13);
+        // LEG 2
+        glScalef(1, 0.5, 1);
+        glTranslatef(0, -0.11, 0);
+        glRotatef(Bleg1.move, 1, 0, 0);
+        
+        glTranslatef(0, -0.15, 0);
+        glScalef(1.0, 3.0, 1.0);
+        glutSolidCube(0.11);
+        
+        glPushMatrix();
+            glColor3ubv(robox_connect);
+            glTranslatef(0, -0.055, 0);
+            glRotatef(90, 0, 0, 1);
+            glScalef(0.16f, 1.3f, 1.0f);
+            glutSolidCube(0.2);
+        glPopMatrix();
     
     glPopMatrix();
 }
-
 // Print My display
 void print(void){
     
     
     glPushMatrix();
-    glTranslatef(400-position_x, 400 - position_y, 0);
+    glTranslatef(400-position_x-position_hx.move, 400 -position_y - position_hy.move, 0);
     glRotatef(auto_rotate,0.0f, 1.0f, 0.0f);
     // BODY PART
     glPushMatrix();
     glColor3ubv(robox_body);
     glScalef(0.85f, 1.0f, 0.5f);
     glutSolidCube(0.7);
+    
+    glColor3ub(255, 255, 255);
+    
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, tele);
+    glBegin(GL_QUADS);
+    {
+        glNormal3f(0, 0, 1);
+        //glColor3f(1, 1, 1);
+        glTexCoord2f(0.05, 1.01); glVertex3f(-0.18f, 0.15f, 0.36f);
+        glTexCoord2f(0.05, 0.01); glVertex3f(-0.18f, -0.25f, 0.36f);
+        glTexCoord2f(1.05, 0.01); glVertex3f(0.22f, -0.25f, 0.36f);
+        glTexCoord2f(1.05, 1.01); glVertex3f(0.22f, 0.15f, 0.36f);
+    }
+    glEnd();
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glDisable(GL_TEXTURE_2D);
+    
     glPopMatrix();
     
     // HEAD CONNECT PART
     glPushMatrix();
-    glTranslatef(0, head.move, 0);
-    glColor3ubv(robox_connect);
-    glTranslatef(0.0f, 0.35f, 0.0f);
-    glScalef(1.0f, 0.5f, 1.0f);
-    glutSolidCube(0.10);
-    glTranslatef(0.0f, 0.1f, 0.0f);
-    glutSolidCube(0.11);
-    glTranslatef(0.0f, 0.11f, 0.0f);
-    glutSolidCube(0.12);
-    glTranslatef(0.0f, 0.12f, 0.0f);
-    glutSolidCube(0.13);
+        glTranslatef(0, head.move, 0);
+        glColor3ubv(robox_connect);
+        glTranslatef(0.0f, 0.35f, 0.0f);
+        glScalef(1.0f, 0.5f, 1.0f);
+        glutSolidCube(0.10);
+        glTranslatef(0.0f, 0.1f, 0.0f);
+        glutSolidCube(0.11);
+        glTranslatef(0.0f, 0.11f, 0.0f);
+        glutSolidCube(0.12);
+        glTranslatef(0.0f, 0.12f, 0.0f);
+        glutSolidCube(0.13);
     glPopMatrix();
     
     // HEAD PART
@@ -292,208 +437,23 @@ void print(void){
         glPopMatrix();
         
     }
-        glPushMatrix();
-            glColor3ub(255, 255, 255);
-            glTranslatef(0.15f, 0.0f, 0.0f);
-            glScaled(0.02f, 0.05f, 0.05f);
-            glutSolidIcosahedron();
-        glPopMatrix();
-    
-        glPushMatrix();
-            glColor3ub(255, 255, 255);
-            glTranslatef(-0.15f, 0.0f, 0.0f);
-            glScaled(0.02f, 0.05f, 0.05f);
-            glutSolidIcosahedron();
-        glPopMatrix();
+        head_ear(0.15);
+        head_ear(-0.15);
     glPopMatrix();
     
     // RIGHT HAND
-    glPushMatrix();
-    glColor3ubv(robox_connect);
-    glTranslatef(0.33f, 0.27f, 0.0f);
-    //glutSolidSphere(0.085, 30, 30);
-    glPushMatrix();
-    glRotated(90, 0, 1, 0);
-    glutSolidTorus(0.05, 0.035, 30, 30);
-    glTranslatef(0, 0, 0.03);
-    glutSolidTorus(0.05, 0.015, 30, 30);
-    glPopMatrix();
-    
-    //glRotatef(60, 0, 0, -1);
-    glRotatef(H_hand1.move, 0, 0, -1);
-    glRotatef(hand1.move, 0, -1, 0);
-    glColor3ubv(robox_body);
-    glTranslatef(0.19f, 0.0f, 0.0f);
-    glScalef(2.2f, 0.7f, 1.0f);
-    glutSolidCube(0.11);
-    
-    glScalef(1/2.2f, 1/0.7f, 1.0f);
-    glColor3ubv(robox_connect);
-    glTranslatef(0.19f, 0.0f, 0.0f);
-    glutSolidSphere(0.08, 30, 30);
-    /*glPushMatrix();
-    glScaled(0.8f, 1.0f, 1.0f);
-    glRotated(90, 0, 1, 0);
-    glutSolidTorus(0.08, 0.035, 30, 30);
-    glPopMatrix();
-    */
-    //glRotatef(20, 0, 0, -1);
-    glRotatef(H_hand2.move, 0, 0, -1);
-    glRotatef(hand2.move, 0, -1, 0);
-    glColor3ubv(robox_body);
-    glTranslatef(0.18f, 0.0f, 0.0f);
-    glScalef(1.6f, 1.0f, 1.0f);
-    glutSolidCube(0.15);
-    
-    glScalef(1/2.0f, 1.0f, 1.0f);
-    glColor3ubv(robox_connect);
-    glTranslatef(0.22f, 0.0f, 0.0f);
-    //glutSolidSphere(0.085, 30, 30);
-    glPushMatrix();
-    glScaled(1, 1.2f, 1.2f);
-    glutSolidCube(0.14);
-    glPopMatrix();
-    
-    glPushMatrix();
-    glTranslatef(0.075, 0.0f, 0.0f);
-    glScalef(0.7f, 1.0f, 1.0f);
-    /*draw_finger(180, -20, 0.04, 0.035);
-    draw_finger(180, -35, 0.04, -0.035);
-    draw_finger(160, 30, -0.05, 0.0);*/
-    draw_finger(fingerH1.move, fingerB1.move, 0.04, 0.035);
-    draw_finger(fingerH2.move, fingerB2.move, 0.04, -0.035);
-    draw_finger(fingerH3.move, fingerB3.move, -0.05, 0.0);
-    glPopMatrix();
-    glPopMatrix();
-    
+    hand(0.33, 1, H_hand1, hand1, H_hand2, hand2, 0.22, 'r');
     // LIEF HAND
-    glPushMatrix();
-    glColor3ubv(robox_connect);
-    glTranslatef(-0.32f, 0.27f, 0.0f);
-    //glutSolidSphere(0.085, 30, 30);
-    glPushMatrix();
-    glRotated(90, 0, 1, 0);
-    glutSolidTorus(0.05, 0.035, 30, 30);
-    glTranslatef(0, 0, -0.03);
-    glutSolidTorus(0.05, 0.015, 30, 30);
-    glPopMatrix();
-    
-    //glRotatef(240, 0, 0, 1);
-    glRotatef(H_hand1_l.move, 0, 0, 1);
-    glRotatef(hand1_l.move, 0, 1, 0);
-    glColor3ubv(robox_body);
-    glTranslatef(0.19f, 0.0f, 0.0f);
-    glScalef(2.2f, 0.7f, 1.0f);
-    glutSolidCube(0.11);
-    
-    glScalef(1/2.2f, 1/0.7f, 1.0f);
-    glColor3ubv(robox_connect);
-    glTranslatef(0.19f, 0.0f, 0.0f);
-    glutSolidSphere(0.08, 30, 30);
-    
-    //glRotatef(20, 0, 0, 1);
-    glRotatef(H_hand2_l.move, 0, 0, 1);
-    glRotatef(hand2_l.move, 0, 1, 0);
-    glColor3ubv(robox_body);
-    glTranslatef(0.18f, 0.0f, 0.0f);
-    glScalef(1.6f, 1.0f, 1.0f);
-    glutSolidCube(0.15);
-    
-    glScalef(1/2.0f, 1.0f, 1.0f);
-    glColor3ubv(robox_connect);
-    glTranslatef(0.19f, 0.0f, 0.0f);
-    //glutSolidSphere(0.085, 30, 30);
-    glPushMatrix();
-    glScaled(1, 1.2f, 1.2f);
-    glutSolidCube(0.14);
-    glPopMatrix();
+    hand(-0.32, -1, H_hand1_l, hand1_l, H_hand2_l, hand2_l, 0.19, 'l');
     
     glPushMatrix();
-    glTranslatef(0.075, 0.0f, 0.0f);
-    glScalef(0.7f, 1.0f, 1.0f);
-    draw_finger(fingerLH1.move, fingerLB1.move, 0.04, 0);
-    draw_finger(fingerLH2.move, fingerLB2.move, -0.05, 0.035);
-    draw_finger(fingerLH3.move, fingerLB3.move, -0.05, -0.035);
-    glPopMatrix();
-    glPopMatrix();
-    
-    // RIGHT LEG
-    glPushMatrix();
-        glColor3ubv(robox_connect);
+        glColor3ub(255, 255, 255);
         glTranslatef(0, -0.4f, 0.0f);
-    
-        glPushMatrix();
-            glTranslatef(0.15, 0, 0);
-            //glutSolidSphere(0.085, 30, 30);
-            glPushMatrix();
-                glScalef(0.07f, 0.05f, 0.09f);
-                glutSolidDodecahedron();
-            glPopMatrix() ;
-            // LEG 1
-            glColor3ubv(robox_leg);
-            glRotatef(leg1.move, 1, 0, 0);
-            glTranslatef(0, -0.18, 0);
-            glScalef(1.0, 1.8, 1.0);
-            glutSolidCube(0.13);
-            // LEG 2
-            glScalef(1, 0.5, 1);
-            glTranslatef(0, -0.11, 0);
-            glRotatef(leg2.move, 1, 0, 0);
-            glTranslatef(0, -0.15, 0);
-            glScalef(1.0, 3.0, 1.0);
-            glutSolidCube(0.11);
-            
-            glPushMatrix();
-                glColor3ubv(robox_connect);
-                glTranslatef(0, -0.055, 0);
-            
-                glRotatef(90, 0, 0, 1);
-                glScalef(0.16f, 1.3f, 1.0f);
-                glutSolidCube(0.2);
-                //glutSolidOctahedron();
-            glPopMatrix();
-        
-        glPopMatrix();
-    
-   
+        // RIGHT LEG
+        draw_leg(0.15, leg1, leg2, leg_y1, textureID);
         // LEFT LEG
-        glPushMatrix();
-            glTranslatef(-0.15, 0, 0);
-            //glutSolidSphere(0.085, 30, 30);
-    
-            glPushMatrix();
-                glScalef(0.07f, 0.05f, 0.09f);
-                glutSolidDodecahedron();
-            glPopMatrix() ;
-    
-            // LEG 1
-            glColor3ubv(robox_leg);
-            glRotatef(leg1_l.move, 1, 0, 0);
-            glTranslatef(0, -0.18, 0);
-            glScalef(1.0, 1.8, 1.0);
-            glutSolidCube(0.13);
-            // LEG 2
-            glScalef(1, 0.5, 1);
-            glTranslatef(0, -0.11, 0);
-            glRotatef(leg2_l.move, 1, 0, 0);
-            glTranslatef(0, -0.15, 0);
-            glScalef(1.0, 3.0, 1.0);
-            glutSolidCube(0.11);
-            
-            glPushMatrix();
-                glColor3ubv(robox_connect);
-                glTranslatef(0, -0.055, 0);
-                glRotatef(90, 0, 0, 1);
-                glScalef(0.16f, 1.3f, 1.0f);
-                glutSolidCube(0.2);
-            glPopMatrix();
-        
-        glPopMatrix();
-    
-    
-    
+        draw_leg(-0.15, leg1_l, leg2_l, leg_ly1, textureID);
     glPopMatrix();
-    
     
     glPopMatrix();
 }
@@ -504,24 +464,10 @@ void My_Display()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
     glLoadIdentity();
-    /*glBegin(GL_TRIANGLES);
-     {
-     glColor3ub(timer_cnt, 0, 255 - timer_cnt);
-     glVertex3fv(tri_v1);
-     glColor3ub(255, timer_cnt, 255 - timer_cnt);
-     glVertex3fv(tri_v2);
-     glColor3ub(255 - timer_cnt, 0, timer_cnt);
-     glVertex3fv(tri_v3);
-     
-     
-     }
-     glEnd();*/
-    
     
     print();
     trans_animate();
-    
-    //glPopMatrix();
+
     glutSwapBuffers();
 }
 
@@ -577,6 +523,12 @@ void My_Keyboard(unsigned char key, int x, int y)
             break;
         case 'd':
             position_x -= 0.01;
+            break;
+        case 's':
+            position_y += 0.01;
+            break;
+        case 'w':
+            position_y -= 0.01;
             break;
         default:
             break;
@@ -664,11 +616,90 @@ void My_Menu(int id)
             break;
     }
 }
+GLuint loadBMP_custom(const char * imagepath)
+{
+    
+    // Texture
+    unsigned char header[54]; // Each BMP file begins by a 54-bytes header
+    unsigned int dataPos;     // Position in the file where the actual data begins
+    unsigned int width, height;
+    unsigned int imageSize;   // = width*height*3
+    // Actual RGB data
+    unsigned char * data;
+    
+    FILE * file = fopen(imagepath, "rb");
+    if (!file){ printf("Image could not be opened\n"); }
+    if (fread(header, 1, 54, file) != 54){ // If not 54 bytes read : problem
+        printf("Not a correct BMP file\n");
+    }
+    if (header[0] != 'B' || header[1] != 'M'){
+        printf("Not a correct BMP file\n");
+    }
+    dataPos = *(int*)&(header[0x0A]);
+    imageSize = *(int*)&(header[0x22]);
+    width = *(int*)&(header[0x12]);
+    height = *(int*)&(header[0x16]);
+    if (imageSize == 0)    imageSize = width*height * 3;
+    if (dataPos == 0)      dataPos = 54;
+    data = new unsigned char[imageSize];
+    fread(data, 1, imageSize, file);
+    fclose(file);
+    
+    GLuint texture;
+    glGenTextures(1, &texture);
+    // "Bind" the newly created texture : all future texture functions will modify this texture
+    glBindTexture(GL_TEXTURE_2D, texture);
+    // Give the image to OpenGL
+    glEnable(GL_TEXTURE_2D);
+    gluBuild2DMipmaps(GL_TEXTURE_2D, 3, width, height, GL_RGB, GL_UNSIGNED_BYTE, data);
+    return texture;
+}
+
+GLuint loading_png(const char * imagepath)
+{
+    texture_data tdata = load_png(imagepath); // return width * height * 4 uchars
+    GLuint texture;
+    if(tdata.data == 0)
+    {
+        printf("Load png failed\n\n\n");
+        //load failed
+        return texture;
+    }
+    glGenTextures(1, &texture);
+    glBindTexture(GL_TEXTURE_2D, texture);
+
+    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, tdata.width, tdata.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, tdata.data); // Use GL_RGBA
+    glGenerateMipmap(GL_TEXTURE_2D);
+    glAlphaFunc (GL_GREATER, 0) ; //解決alpha與z-buffer的問題
+    glEnable (GL_ALPHA_TEST) ;
+    glEnable(GL_TEXTURE_2D);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    free_texture_data(tdata);
+    
+    return texture;
+    
+}
+void setTexture()
+{
+    textureID = loadBMP_custom("/Users/Mac/Desktop/drawing code/hw1_robox/hw1_robox/texture_metal3.bmp");
+    tele = loading_png("/Users/Mac/Desktop/drawing code/hw1_robox/hw1_robox/television.png");
+
+    GLfloat border_color[] = { 1.0, 0, 0, 1.0 };
+    GLfloat env_color[] = { 0, 1.00, 0, 1.00 };
+    
+    
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameterfv(GL_TEXTURE_2D,GL_TEXTURE_BORDER_COLOR,border_color);
+    glTexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR,env_color);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+    
+}
 void initial_statement(){
     
-    
-    // Create a menu and bind it to mouse right button.
-    ////////////////////////////
     int menu_main = glutCreateMenu(My_Menu);
     int menu_ani = glutCreateMenu(My_Menu);
     int menu_speed = glutCreateMenu(My_Menu);
@@ -683,10 +714,6 @@ void initial_statement(){
     glutAddMenuEntry("Stop", MENU_STOP);
     glutAddMenuEntry("Exit", MENU_EXIT);
     
-    /*glutSetMenu(menu_color);
-    glutAddMenuEntry("Start", MENU_TIMER_START);
-    glutAddMenuEntry("Stop", MENU_TIMER_STOP);*/
-    
     glutSetMenu(menu_speed);
     glutAddMenuEntry("Speed up", MENU_SPEED_UP);
     glutAddMenuEntry("Speed down", MENU_SPEED_DOWN);
@@ -697,18 +724,14 @@ void initial_statement(){
     
     glutSetMenu(menu_main);
     glutAttachMenu(GLUT_RIGHT_BUTTON);
-    ////////////////////////////
-    
-    // Register GLUT callback functions.
-    ///////////////////////////////
+
     glutDisplayFunc(My_Display);
     glutReshapeFunc(My_Reshape);
     glutMouseFunc(My_Mouse);
     glutKeyboardFunc(My_Keyboard);
     glutSpecialFunc(My_SpecialKeys);
     glutTimerFunc(timer_speed, My_Timer, 0);
-    ///////////////////////////////
-    
+  
     // LIGHT
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
@@ -727,76 +750,23 @@ void initial_statement(){
     glMaterialfv(GL_FRONT, GL_DIFFUSE,   mat_diffuse);
     glMaterialfv(GL_FRONT, GL_SPECULAR,  mat_specular);
     glMaterialfv(GL_FRONT, GL_SHININESS, high_shininess);
-    
-    
-    
+
 }
 int main(int argc, char *argv[])
 {
-    // Initialize GLUT and GLEW, then create a window.
-    ////////////////////
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
     glutInitWindowPosition(200, 200);
     glutInitWindowSize(800, 800);
-    glutCreateWindow("Hw 1 robox design"); // You cannot use OpenGL functions before this line; The OpenGL context must be created first by glutCreateWindow()!
-    dumpInfo();
-    ////////////////////
-    
-    // Initialize OpenGL states.
-    ////////////////////////
+    glutCreateWindow("Hw 1 robot design");
+
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
-    ////////////////////////
-    
+    setTexture();
     initial_statement();
     init_para();
-    // Enter main event loop.
-    //////////////
+    
     glutMainLoop();
-    //////////////
     return 0;
 }
-/*
-glBegin(GL_QUADS);
-{
-    glColor3ubv(robox_connect);
-    glVertex3f( 0.2f, 0.15f, 0.175f);
-    glVertex3f(-0.2f, 0.15f, 0.175f);
-    glVertex3f(-0.3f, -0.15f, 0.175f);
-    glVertex3f( 0.3f, -0.15f, 0.175f);
-    
-    
-     // Bottom face (y = -1.0f)
-     glVertex3f( 1.0f, -1.0f,  1.0f);
-     glVertex3f(-1.0f, -1.0f,  1.0f);
-     glVertex3f(-1.0f, -1.0f, -1.0f);
-     glVertex3f( 1.0f, -1.0f, -1.0f);
-     
-     // Front face  (z = 1.0f)
-     glVertex3f( 1.0f,  1.0f, 1.0f);
-     glVertex3f(-1.0f,  1.0f, 1.0f);
-     glVertex3f(-1.0f, -1.0f, 1.0f);
-     glVertex3f( 1.0f, -1.0f, 1.0f);
-     
-     // Back face (z = -1.0f)
-     glVertex3f( 1.0f, -1.0f, -1.0f);
-     glVertex3f(-1.0f, -1.0f, -1.0f);
-     glVertex3f(-1.0f,  1.0f, -1.0f);
-     glVertex3f( 1.0f,  1.0f, -1.0f);
-     
-     // Left face (x = -1.0f)
-     glVertex3f(-1.0f,  1.0f,  1.0f);
-     glVertex3f(-1.0f,  1.0f, -1.0f);
-     glVertex3f(-1.0f, -1.0f, -1.0f);
-     glVertex3f(-1.0f, -1.0f,  1.0f);
-     
-     // Right face (x = 1.0f)
-     glVertex3f(1.0f,  1.0f, -1.0f);
-     glVertex3f(1.0f,  1.0f,  1.0f);
-     glVertex3f(1.0f, -1.0f,  1.0f);
-     glVertex3f(1.0f, -1.0f, -1.0f);
-     
-}
-glEnd();*/
