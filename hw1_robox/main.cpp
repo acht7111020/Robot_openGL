@@ -2,6 +2,7 @@
 #include <GLUT/glut.h>
 #include <cstdio>
 #include <cstdlib>
+#include <math.h>
 #include <iostream>
 #include "texture_loader.h"
 
@@ -35,21 +36,26 @@ const GLfloat mat_diffuse[]    = { 0.8f, 0.8f, 0.8f, 1.0f };
 const GLfloat mat_specular[]   = { 1.0f, 1.0f, 1.0f, 1.0f };
 const GLfloat high_shininess[] = { 100.0f };
 
-
 GLuint textureID, tele;
 
 GLubyte timer_cnt = 0;
-GLuint timer_flag = 90, auto_rotate = 1, flag = 0;
+GLuint timer_flag = 90, auto_rotate = 180, flag = 0;
 GLint x_place_tmp = 0, x_place = 0;
 GLfloat position_x = 400, position_y = 400;
 bool timer_enabled = true;
 unsigned int timer_speed = 16;
-GLUquadricObj *quadricObj = gluNewQuadric();
+GLUquadricObj *cloak = gluNewQuadric();
 
 // menu
 GLfloat MENU_speed = 1;
 GLbyte MENU_stop = 0, MENU_rotate = 1, MENU_pause = 0;
 
+struct cross_obj
+{
+    GLfloat x;
+    GLfloat y;
+    GLfloat z;
+};
 struct animate_paras
 {
     GLfloat move = 0;
@@ -79,7 +85,150 @@ struct papameters_ani {
     GLfloat hand2_smallest[2];
 } paras_ani[3];
 
+cross_obj cross( GLfloat *v1, GLfloat *v2, GLfloat *v3)
+{
+    GLfloat x1 = v1[0] - v2[0],
+    y1 = v1[1] - v2[1],
+    z1 = v1[2] - v2[2],
+    x2 = v1[0] - v3[0],
+    y2 = v1[1] - v3[1],
+    z2 = v1[2] - v3[2];
+    cross_obj n;
+    n.x = y1 * z2 - z1 * y2,
+    n.y = z1 * x2 - x1 * z2,
+    n.z = x1 * y2 - y1 * x2;
+    return n;
+}
 GLuint paras_num = 0;
+void points_init(){
+    GLfloat z = -0.25f;
+    GLfloat p[40][3] = {
+        0, 0, 0, //p0
+        -0.33f, 0.245f, z, //p1
+        -0.27f, 0.37f, z+0.08f, //p2
+        -0.125f, 0.25f, (z+0.03f), //p3
+        -0.075f, 0.35f, z+0.07f, //p4
+        -0.07f, 0.05f, z, //p5
+        -0.075f, 0.35f, z+0.07f, //p4
+        0.05f, 0.1f, z-0.03f, //p6
+        0.075f, 0.35f, z+0.07f, //p7
+        0.2f, 0.28f, z-0.02f, //p8
+        0.27f, 0.37f, z+0.1f, //p9
+        0.37f, 0.09f, z-0.02f, // p10
+        0.2f, 0.28f, z-0.02f, // p11 = p8
+        0.18f, -0.03f, z-0.01f, //p12
+        0.05f, 0.1f, (z-0.03f), // p13 = p6
+        -0.035f, 0.0f, z, //p14
+        -0.07f, 0.05f, z, //p15 = p5
+        -0.14f, -0.04f, z+0.03f, //p16
+        -0.125f, 0.25f, (z+0.03f), // p17 = p3
+        -0.33f, 0.245f, z, // p18 = p1
+        -0.14f, -0.04f, z+0.03f, // p19 = p16
+        -0.33f, 0.0f, z, //p20
+        -0.33f, 0.245f, z, //p21 = p1
+        -0.38f, -0.08f, z, // p22
+        -0.33f, 0.0f, z, // p23 = p20
+        -0.35f, -0.3f, z, // p24
+        -0.14f, -0.04f, z+0.03f, //p25 = p16
+        -0.12f, -0.34f, z, //p26
+        -0.035f, 0.0f, z, // p27 = p14
+        -0.01f, -0.29f, z, // p28
+        0.18f, -0.03f, z-0.01f, // p29 = p12
+        0.08f, -0.35f, z, //p30
+        0.35f, -0.08f, z, //p31
+        0.355f, -0.31f, z, //p32
+        0.4f, -0.3f, z, // p33
+        0.35f, -0.08f, z, // p34
+        0.38f, -0.15f, z, //p35
+        0.37f, 0.09f, z-0.02f, //p36 = p10
+        0.35f, -0.08f, z, //p37 = p31
+        0.18f, -0.03f, z-0.01f,}; //p38 = p12
+    
+    GLfloat b[50][3] = {
+        0, 0, 0,
+        0.42f, -0.41f, z, // b1 = b10
+        0.4f, -0.3f, z, // b2 = p33
+        0.37f, -0.41f, z, // b3 = b6 = b9
+        0.355f, -0.31f, z, // b4 = p32
+        0.1f, -0.45f, z, // b5 = b18 = b43
+        0.37f, -0.41f, z, // b6 = b3
+        0.32f, -0.58f, z, // b7 = b16
+        0.39f, -0.61f, z, // b8 = b11 = b14
+        0.37f, -0.41f, z, // b9 = b3
+        0.42f, -0.41f, z, // b10
+        0.39f, -0.61f, z, // b11 = b8
+        0.44f, -0.75f, z,// b12
+        0.35f, -0.73f, z, // b13 = b15
+        0.39f, -0.61f, z, // b14 = b8
+        0.35f, -0.73f, z, // b15 = b13
+        0.32f, -0.58f, z, // b16 = b7
+        0.20f, -0.76f, z, // b17
+        0.1f, -0.45f, z, // b18 = b5
+        0.06f, -0.74f, z, // b19
+        -0.05f, -0.45f,z, // b20 = b38 = b41
+        -0.1f, -0.75f, z, // b21
+        -0.22f, -0.42f, z,// b22 = b34 = b37
+        -0.32f, -0.74f, z,// b23
+        -0.38f, -0.44f, z,// b24 = b27 = b33
+        -0.44f, -0.75f, z,// b25
+        -0.42f, -0.25f, z,// b26 = b29
+        -0.38f, -0.44f, z,// b27 = b24
+        -0.35f, -0.3f, z, // b28 = b31 = b32 = b35 = p24
+        -0.42f, -0.25f, z,// b29 = b29
+        -0.38f, -0.08f, z,// b30 = p22
+        -0.35f, -0.3f, z, // b31 = b28
+        -0.35f, -0.3f, z,// b32 = b28
+        -0.38f, -0.44f, z,// b33 = b24
+        -0.22f, -0.42f, z,// b34 = b22
+        -0.35f, -0.3f, z, // b35 = b28
+        -0.12f, -0.34f, z,// b36 = b39 = p26
+        -0.22f, -0.42f, z,// b37 = b34
+        -0.05f, -0.45f, z, // b38 = b20
+        -0.12f, -0.34f, z, // b39 = b36
+        -0.01f, -0.29f, z,// b40 = p28
+        -0.05f, -0.45f, z, // b41 = b20
+        0.08f, -0.35f, z, // b42 = p30
+        0.1f, -0.45f, z, // b43 = b5
+        0.355f, -0.31f, z // b44 = b4
+    };
+    glPushMatrix();
+    glDisable(GL_CULL_FACE);
+    glBegin(GL_TRIANGLES);
+    {
+        glColor3ub(255, 255, 255);
+        glColor3f(1.0f, 0.0f, 0.0f);
+        if ((int)auto_rotate % 360 > 90 && (int)auto_rotate % 360 < 270)
+            glColor3f(1.0f, 1.0f, 0.0f);
+        glRotatef(auto_rotate, 0.0f, 1.0f, 0.0f);
+        glBegin(GL_TRIANGLES);
+            for(int i = 1; i < 38; i++){
+                cross_obj n = cross(p[i], p[i+1], p[i+2]);
+                if (n.z < 0) {
+                    glNormal3f(n.x, n.y, n.z);
+                }else
+                    glNormal3f(-1*n.x, -1*n.y, -1*n.z);
+
+                glVertex3fv(p[i]);
+                glVertex3fv(p[i+1]);
+                glVertex3fv(p[i+2]);
+            }
+            for(int i = 1; i < 43; i++){
+                cross_obj n = cross(b[i], b[i+1], b[i+2]);
+                if (n.z < 0) {
+                    glNormal3f(n.x, n.y, n.z);
+                }else
+                    glNormal3f(-1*n.x, -1*n.y, -1*n.z);
+                glVertex3fv(b[i]);
+                glVertex3fv(b[i+1]);
+                glVertex3fv(b[i+2]);
+            }
+        glEnd();
+        //glutPostRedisplay();
+    }
+    glEnd();
+    glEnable(GL_CULL_FACE);
+    glPopMatrix();
+}
 
 animate_paras trans_animate_paras(animate_paras parts, GLfloat biggest, GLfloat smallest, GLfloat rate){
     
@@ -202,7 +351,16 @@ void init_para(){
     //paras[0] = {0, -0.15, {10,10}, {-10,-10}, {30, 10}, {-10,-30}, {0,0}, {-40,-40}, {40,40}, {0,0}};
 
 }
-
+void draw_clock(GLint flag){
+    // cloak
+    glPushMatrix();
+    glTranslatef(0.23*flag, 0.3, -0.13);
+    glRotated(90, -1, 0, 0);
+    gluCylinder(cloak, 0.05, 0.05, 0.07, 30, 30);
+    glTranslatef(0, 0, 0.05f);
+    glutSolidSphere(0.05, 30, 30);
+    glPopMatrix();
+}
 void head_ear(GLfloat x){
     glPushMatrix();
         glColor3ub(255, 255, 255);
@@ -440,6 +598,11 @@ void print(void){
         head_ear(0.15);
         head_ear(-0.15);
     glPopMatrix();
+    
+    // cloak
+    draw_clock(1);
+    draw_clock(-1);
+    points_init();
     
     // RIGHT HAND
     hand(0.33, 1, H_hand1, hand1, H_hand2, hand2, 0.22, 'r');

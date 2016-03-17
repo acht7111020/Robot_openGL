@@ -13,11 +13,6 @@
 		04CC327B1C9970F300A0B121 /* libtexture_loader.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 04CC327A1C9970F300A0B121 /* libtexture_loader.a */; settings = {ATTRIBUTES = (Required, ); }; };
 		04CC327D1C99733C00A0B121 /* libjpeg.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 04CC327C1C99733C00A0B121 /* libjpeg.a */; };
 		04CC327F1C99734D00A0B121 /* libpng16.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 04CC327E1C99734D00A0B121 /* libpng16.a */; };
-		04CC32961C997DBA00A0B121 /* texture_metal3.jpg in Copy Files */ = {isa = PBXBuildFile; fileRef = 04CC328A1C99798E00A0B121 /* texture_metal3.jpg */; };
-		04CC32971C997DBA00A0B121 /* texture_metal2.jpg in Copy Files */ = {isa = PBXBuildFile; fileRef = 04CC328B1C99798E00A0B121 /* texture_metal2.jpg */; };
-		04CC32981C997DBA00A0B121 /* texture_metal.jpg in Copy Files */ = {isa = PBXBuildFile; fileRef = 04CC328C1C99798E00A0B121 /* texture_metal.jpg */; };
-		04CC32991C997DBA00A0B121 /* nthu.png in Copy Files */ = {isa = PBXBuildFile; fileRef = 04CC328D1C99798E00A0B121 /* nthu.png */; };
-		04CC329B1C998DE300A0B121 /* test.bmp in Copy Files */ = {isa = PBXBuildFile; fileRef = 04CC329A1C998DC800A0B121 /* test.bmp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -27,11 +22,6 @@
 			dstPath = "Users/Mac/Desktop/drawing code/hw1_robox/hw1_robox";
 			dstSubfolderSpec = 16;
 			files = (
-				04CC329B1C998DE300A0B121 /* test.bmp in Copy Files */,
-				04CC32961C997DBA00A0B121 /* texture_metal3.jpg in Copy Files */,
-				04CC32971C997DBA00A0B121 /* texture_metal2.jpg in Copy Files */,
-				04CC32981C997DBA00A0B121 /* texture_metal.jpg in Copy Files */,
-				04CC32991C997DBA00A0B121 /* nthu.png in Copy Files */,
 			);
 			name = "Copy Files";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -46,12 +36,6 @@
 		04CC327A1C9970F300A0B121 /* libtexture_loader.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libtexture_loader.a; path = lib/libtexture_loader.a; sourceTree = "<group>"; };
 		04CC327C1C99733C00A0B121 /* libjpeg.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libjpeg.a; path = ../../../../../usr/local/Cellar/jpeg/8d/lib/libjpeg.a; sourceTree = "<group>"; };
 		04CC327E1C99734D00A0B121 /* libpng16.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpng16.a; path = ../../../../../usr/local/Cellar/libpng/1.6.21/lib/libpng16.a; sourceTree = "<group>"; };
-		04CC328A1C99798E00A0B121 /* texture_metal3.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = texture_metal3.jpg; path = hw1_robox/texture_metal3.jpg; sourceTree = "<group>"; };
-		04CC328B1C99798E00A0B121 /* texture_metal2.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = texture_metal2.jpg; path = hw1_robox/texture_metal2.jpg; sourceTree = "<group>"; };
-		04CC328C1C99798E00A0B121 /* texture_metal.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = texture_metal.jpg; path = hw1_robox/texture_metal.jpg; sourceTree = "<group>"; };
-		04CC328D1C99798E00A0B121 /* nthu.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = nthu.png; path = hw1_robox/nthu.png; sourceTree = "<group>"; };
-		04CC329A1C998DC800A0B121 /* test.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; name = test.bmp; path = hw1_robox/test.bmp; sourceTree = "<group>"; };
-		04CC329C1C99AACE00A0B121 /* texture_metal3.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; name = texture_metal3.bmp; path = hw1_robox/texture_metal3.bmp; sourceTree = "<group>"; };
 		04CC329D1C99AB5300A0B121 /* test_converted.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; path = test_converted.bmp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -74,13 +58,7 @@
 		0438269E1C8FDC9300E05729 = {
 			isa = PBXGroup;
 			children = (
-				04CC328A1C99798E00A0B121 /* texture_metal3.jpg */,
-				04CC328B1C99798E00A0B121 /* texture_metal2.jpg */,
-				04CC329C1C99AACE00A0B121 /* texture_metal3.bmp */,
 				04CC329D1C99AB5300A0B121 /* test_converted.bmp */,
-				04CC329A1C998DC800A0B121 /* test.bmp */,
-				04CC328C1C99798E00A0B121 /* texture_metal.jpg */,
-				04CC328D1C99798E00A0B121 /* nthu.png */,
 				04CC327E1C99734D00A0B121 /* libpng16.a */,
 				04CC327C1C99733C00A0B121 /* libjpeg.a */,
 				04CC327A1C9970F300A0B121 /* libtexture_loader.a */,
@@ -141,7 +119,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 043826A21C8FDC9300E05729 /* Build configuration list for PBXProject "hw1_robox" */;
+			buildConfigurationList = 043826A21C8FDC9300E05729 /* Build configuration list for PBXProject "hw1_robot" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -278,7 +256,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		043826A21C8FDC9300E05729 /* Build configuration list for PBXProject "hw1_robox" */ = {
+		043826A21C8FDC9300E05729 /* Build configuration list for PBXProject "hw1_robot" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				043826AC1C8FDC9300E05729 /* Debug */,
