@@ -39,7 +39,7 @@ const GLfloat high_shininess[] = { 100.0f };
 GLuint textureID, tele;
 
 GLubyte timer_cnt = 0;
-GLuint timer_flag = 90, auto_rotate = 180, flag = 0;
+GLuint timer_flag = 90, auto_rotate = 1, flag = 0;
 GLint x_place_tmp = 0, x_place = 0;
 GLfloat position_x = 400, position_y = 400;
 bool timer_enabled = true;
@@ -120,16 +120,16 @@ void points_init(){
         0.05f, 0.1f, (z-0.03f), // p13 = p6
         -0.035f, 0.0f, z, //p14
         -0.07f, 0.05f, z, //p15 = p5
-        -0.14f, -0.04f, z+0.03f, //p16
+        -0.14f, -0.04f, z-0.03f, //p16
         -0.125f, 0.25f, (z+0.03f), // p17 = p3
         -0.33f, 0.245f, z, // p18 = p1
-        -0.14f, -0.04f, z+0.03f, // p19 = p16
+        -0.14f, -0.04f, z-0.03f, // p19 = p16
         -0.33f, 0.0f, z, //p20
         -0.33f, 0.245f, z, //p21 = p1
         -0.38f, -0.08f, z, // p22
         -0.33f, 0.0f, z, // p23 = p20
-        -0.35f, -0.3f, z, // p24
-        -0.14f, -0.04f, z+0.03f, //p25 = p16
+        -0.35f, -0.3f, z+0.02f, // p24
+        -0.14f, -0.04f, z-0.03f, //p25 = p16
         -0.12f, -0.34f, z, //p26
         -0.035f, 0.0f, z, // p27 = p14
         -0.01f, -0.29f, z, // p28
@@ -146,49 +146,49 @@ void points_init(){
     
     GLfloat b[50][3] = {
         0, 0, 0,
-        0.42f, -0.41f, z, // b1 = b10
+        0.42f, -0.41f, z+0.03f, // b1 = b10
         0.4f, -0.3f, z, // b2 = p33
         0.37f, -0.41f, z, // b3 = b6 = b9
         0.355f, -0.31f, z, // b4 = p32
-        0.1f, -0.45f, z, // b5 = b18 = b43
+        0.1f, -0.45f, z-0.02f, // b5 = b18 = b43
         0.37f, -0.41f, z, // b6 = b3
         0.32f, -0.58f, z, // b7 = b16
         0.39f, -0.61f, z, // b8 = b11 = b14
         0.37f, -0.41f, z, // b9 = b3
-        0.42f, -0.41f, z, // b10
+        0.42f, -0.41f, z+0.03f, // b10
         0.39f, -0.61f, z, // b11 = b8
-        0.44f, -0.75f, z,// b12
-        0.35f, -0.73f, z, // b13 = b15
+        0.44f, -0.79f, z+0.03f,// b12
+        0.35f, -0.77f, z+0.01f, // b13 = b15
         0.39f, -0.61f, z, // b14 = b8
-        0.35f, -0.73f, z, // b15 = b13
+        0.35f, -0.77f, z+0.01f, // b15 = b13
         0.32f, -0.58f, z, // b16 = b7
-        0.20f, -0.76f, z, // b17
-        0.1f, -0.45f, z, // b18 = b5
-        0.06f, -0.74f, z, // b19
+        0.20f, -0.75f, z+0.01f, // b17
+        0.1f, -0.45f, z-0.02f, // b18 = b5
+        0.06f, -0.76f, z+0.01f, // b19
         -0.05f, -0.45f,z, // b20 = b38 = b41
-        -0.1f, -0.75f, z, // b21
-        -0.22f, -0.42f, z,// b22 = b34 = b37
-        -0.32f, -0.74f, z,// b23
-        -0.38f, -0.44f, z,// b24 = b27 = b33
-        -0.44f, -0.75f, z,// b25
-        -0.42f, -0.25f, z,// b26 = b29
-        -0.38f, -0.44f, z,// b27 = b24
-        -0.35f, -0.3f, z, // b28 = b31 = b32 = b35 = p24
-        -0.42f, -0.25f, z,// b29 = b29
+        -0.1f, -0.79f, z+0.01f, // b21
+        -0.22f, -0.52f, z-0.02f,// b22 = b34 = b37
+        -0.32f, -0.74f, z+0.02f,// b23
+        -0.38f, -0.44f, z-0.01f,// b24 = b27 = b33
+        -0.44f, -0.79f, z+0.03f,// b25
+        -0.4f, -0.4f, z+0.02f,// b26 = b29
+        -0.38f, -0.44f, z-0.01f,// b27 = b24
+        -0.35f, -0.3f, z+0.02f, // b28 = b31 = b32 = b35 = p24
+        -0.4f, -0.4f, z+0.02f,// b29 = b29
         -0.38f, -0.08f, z,// b30 = p22
-        -0.35f, -0.3f, z, // b31 = b28
-        -0.35f, -0.3f, z,// b32 = b28
-        -0.38f, -0.44f, z,// b33 = b24
-        -0.22f, -0.42f, z,// b34 = b22
-        -0.35f, -0.3f, z, // b35 = b28
+        -0.35f, -0.3f, z+0.02f, // b31 = b28
+        -0.35f, -0.3f, z+0.02f,// b32 = b28
+        -0.38f, -0.44f, z-0.01f,// b33 = b24
+        -0.22f, -0.52f, z-0.02f,// b34 = b22
+        -0.35f, -0.3f, z+0.02f, // b35 = b28
         -0.12f, -0.34f, z,// b36 = b39 = p26
-        -0.22f, -0.42f, z,// b37 = b34
+        -0.22f, -0.52f, z-0.02f,// b37 = b34
         -0.05f, -0.45f, z, // b38 = b20
         -0.12f, -0.34f, z, // b39 = b36
         -0.01f, -0.29f, z,// b40 = p28
         -0.05f, -0.45f, z, // b41 = b20
         0.08f, -0.35f, z, // b42 = p30
-        0.1f, -0.45f, z, // b43 = b5
+        0.1f, -0.45f, z-0.02f, // b43 = b5
         0.355f, -0.31f, z // b44 = b4
     };
     glPushMatrix();
@@ -198,7 +198,7 @@ void points_init(){
         glColor3ub(255, 255, 255);
         glColor3f(1.0f, 0.0f, 0.0f);
         if ((int)auto_rotate % 360 > 90 && (int)auto_rotate % 360 < 270)
-            glColor3f(1.0f, 1.0f, 0.0f);
+            glColor3b(76, 0, 0);
         glRotatef(auto_rotate, 0.0f, 1.0f, 0.0f);
         glBegin(GL_TRIANGLES);
             for(int i = 1; i < 38; i++){
@@ -243,7 +243,7 @@ animate_paras trans_animate_paras(animate_paras parts, GLfloat biggest, GLfloat 
 }
 void trans_animate(void){
     if (paras_num != 1) {
-        //if (MENU_rotate && !MENU_pause)auto_rotate ++;
+        if (MENU_rotate && !MENU_pause)auto_rotate ++;
     }
     if (!MENU_stop && !MENU_pause) {
         head = trans_animate_paras(head, paras[paras_num].head_biggest, paras[paras_num].head_smallest, 0.001*MENU_speed);
@@ -285,7 +285,7 @@ void trans_animate(void){
             
         }
         else {
-            
+            position_hy = trans_animate_paras(position_hy, 0.05, 0, 0.0007*MENU_speed);
             leg1 = trans_animate_paras(leg1, paras[paras_num].leg1_biggest[0], paras[paras_num].leg1_smallest[0], 0.6*MENU_speed);
             leg2 = trans_animate_paras(leg2, paras[paras_num].leg2_biggest[0], paras[paras_num].leg2_smallest[0], 0.6*MENU_speed);
             leg1_l = trans_animate_paras(leg1_l, paras[paras_num].leg1_biggest[1], paras[paras_num].leg1_smallest[1], 0.6*MENU_speed);
@@ -395,7 +395,7 @@ void draw_finger(GLfloat angle1, GLfloat angle2, GLfloat y, GLfloat z){
     
     glPopMatrix();
 }
-void hand(GLfloat x, GLint flag, animate_paras Hhand1, animate_paras Bhand1, animate_paras Hhand2, animate_paras Bhand2,
+void draw_hand(GLfloat x, GLint flag, animate_paras Hhand1, animate_paras Bhand1, animate_paras Hhand2, animate_paras Bhand2,
           GLfloat x2, char finger){
     
     // RIGHT HAND
@@ -473,7 +473,6 @@ void draw_leg(GLfloat x, animate_paras Hleg1, animate_paras Bleg1, animate_paras
             glEnable(GL_TEXTURE_GEN_R);
             glEnable(GL_TEXTURE_2D);
             glBindTexture(GL_TEXTURE_2D, texture);
-        
                 glScalef(0.07f, 0.05f, 0.08f);
                 glutSolidDodecahedron();
             glBindTexture(GL_TEXTURE_2D, 0);
@@ -605,9 +604,9 @@ void print(void){
     points_init();
     
     // RIGHT HAND
-    hand(0.33, 1, H_hand1, hand1, H_hand2, hand2, 0.22, 'r');
+    draw_hand(0.33, 1, H_hand1, hand1, H_hand2, hand2, 0.22, 'r');
     // LIEF HAND
-    hand(-0.32, -1, H_hand1_l, hand1_l, H_hand2_l, hand2_l, 0.19, 'l');
+    draw_hand(-0.32, -1, H_hand1_l, hand1_l, H_hand2_l, hand2_l, 0.19, 'l');
     
     glPushMatrix();
         glColor3ub(255, 255, 255);
